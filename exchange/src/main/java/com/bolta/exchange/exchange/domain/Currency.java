@@ -12,7 +12,4 @@ public enum Currency {
         this.country = country;
     }
 
-    public String getCountry() {
-        return country;
-    }
 }
