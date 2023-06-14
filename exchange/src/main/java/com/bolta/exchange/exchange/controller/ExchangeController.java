@@ -16,11 +16,11 @@ public class ExchangeController {
         return ResponseEntity.ok().body(exchangeService.getExchangeRate(source,target));
     }
     @GetMapping("/calculate/{source}/{target}")
-    public ResponseEntity getExchangedRemittance(@PathVariable Currency source, @PathVariable Currency target, @RequestParam double price){
-        return ResponseEntity.ok().body(exchangeService.getCalculatedRemittance(source,target,price));
+    public ResponseEntity getExchangedRemittance(@PathVariable Currency source, @PathVariable Currency target, @RequestParam double remittance){
+        return ResponseEntity.ok().body(exchangeService.getCalculatedRemittance(source,target,remittance));
     }
     @GetMapping("/exchange/{source}/{target}")
-    public ResponseEntity exchangeMoney(@PathVariable Currency source, @PathVariable Currency target, @RequestParam double price){
-        return ResponseEntity.ok().body(exchangeService.exchangeMoney(source,target,price));
+    public ResponseEntity exchangeMoney(@PathVariable Currency source, @PathVariable Currency target, @RequestParam double remittance){
+        return ResponseEntity.ok().body(exchangeService.exchangeMoney(source,target,remittance));
     }
 }
