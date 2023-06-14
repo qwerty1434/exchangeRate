@@ -1,8 +1,8 @@
 package com.bolta.exchange.exchange.service;
 
 
-import com.bolta.exchange.api.domain.ExternalApiConnector;
-import com.bolta.exchange.api.dto.ExternalApiResponse;
+import com.bolta.exchange.api.domain.ExchangeRateConnector;
+import com.bolta.exchange.api.dto.ExchangeRateResponse;
 import com.bolta.exchange.exchange.domain.Currency;
 import com.bolta.exchange.exchange.domain.Exchange;
 import com.bolta.exchange.exchange.domain.Remittance;
@@ -16,10 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
+
+    private static final String BASE_URL = "http://apilayer.net/api/live";
+    private static final String API_KEY = "";
+
     @Transactional
     public double getExchangeRate(Currency source, Currency target){
-        ExternalApiResponse externalApiResponse = ExternalApiConnector.getExchangeRate(source,target);
-        return externalApiResponse.getExchangeRate(target);
+        ExchangeRateConnector exchangeRateConnector = new ExchangeRateConnector(BASE_URL,API_KEY);
+        ExchangeRateResponse exchangeRateResponse = exchangeRateConnector.getExchangeRate(source,target);
+        return exchangeRateResponse.getExchangeRate(target);
     }
 
     @Transactional

@@ -4,7 +4,7 @@ import com.bolta.exchange.exchange.domain.Currency;
 import java.util.Map;
 
 
-public class ExternalApiResponse {
+public class ExchangeRateResponse {
     private boolean success;
     private Currency source;
     private Map<String,Double> quotes;
