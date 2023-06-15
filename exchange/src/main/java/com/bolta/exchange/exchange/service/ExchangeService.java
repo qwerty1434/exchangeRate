@@ -1,7 +1,7 @@
 package com.bolta.exchange.exchange.service;
 
 
-import com.bolta.exchange.api.domain.ExchangeRateConnector;
+import com.bolta.exchange.api.domain.ExchangeRateClient;
 import com.bolta.exchange.api.dto.ExchangeRateResponse;
 import com.bolta.exchange.exchange.domain.Currency;
 import com.bolta.exchange.exchange.domain.Exchange;
@@ -9,6 +9,7 @@ import com.bolta.exchange.exchange.domain.Remittance;
 import com.bolta.exchange.exchange.dto.ExchangeMoneyResponse;
 import com.bolta.exchange.exchange.repository.ExchangeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,13 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
 
-    private static final String BASE_URL = "http://apilayer.net/api/live";
-    private static final String API_KEY = "";
+    @Value("${currency-layer.base-url}")
+    private String baseUrl;
+    @Value("${currency-layer.access-key}")
+    private String accessKey;
 
     @Transactional
     public double getExchangeRate(Currency source, Currency target){
-        ExchangeRateConnector exchangeRateConnector = new ExchangeRateConnector(BASE_URL,API_KEY);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateConnector.getExchangeRate(source,target);
+        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
+        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(source,target);
         return exchangeRateResponse.getExchangeRate(target);
     }
 

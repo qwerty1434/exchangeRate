@@ -1,2 +1,6 @@
 server:
   port: 8080
+
+currency-layer:
+  base-url: http://apilayer.net/api/live
+  access-key:
