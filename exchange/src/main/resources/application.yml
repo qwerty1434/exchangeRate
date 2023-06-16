@@ -1,6 +1,8 @@
 server:
   port: 8080
 
-currency-layer:
+api-layer:
   base-url: http://apilayer.net/api/live
   access-key: cfaf3ffe448afdc96e9b4b2b48c4b571
+  allowed-sources: USD
+  allowed-targets: KRW,JPY,PHP

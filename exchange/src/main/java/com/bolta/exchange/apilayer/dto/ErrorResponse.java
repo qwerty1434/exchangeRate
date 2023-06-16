@@ -1,4 +1,4 @@
-package com.bolta.exchange.api.dto;
+package com.bolta.exchange.apilayer.dto;
 
 public class ErrorResponse {
     private int code;

@@ -1,12 +1,13 @@
 package com.bolta.exchange.exchange.domain;
 
+import static com.bolta.exchange.global.exception.ErrorMessage.INVALID_REMITTANCE_VALUE_ERROR;
+
 public class Remittance {
-    private static final String INVALID_REMITTANCE_VALUE = "송금액이 올바르지 않습니다.";
     private final double remittance;
 
 
     private Remittance(double remittance) {
-        ValidateThatRemittanceValueIsWithinRange(remittance);
+        validateRemittanceValueRange(remittance);
         this.remittance = remittance;
     }
 
@@ -14,9 +15,9 @@ public class Remittance {
         return new Remittance(remittance);
     }
 
-    public void ValidateThatRemittanceValueIsWithinRange(double remittance){
+    public void validateRemittanceValueRange(double remittance){
         if(remittance < 0 || remittance > 10_000) throw
-                new IllegalArgumentException(INVALID_REMITTANCE_VALUE);
+                new IllegalArgumentException(INVALID_REMITTANCE_VALUE_ERROR.getMessage());
     }
 
     public double getRemittance() {

@@ -1,6 +1,6 @@
-package com.bolta.exchange.api.domain;
+package com.bolta.exchange.apilayer.domain;
 
-import com.bolta.exchange.api.dto.ExchangeRateResponse;
+import com.bolta.exchange.apilayer.dto.ExchangeRateResponse;
 import com.bolta.exchange.exchange.domain.Currency;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
+import java.util.List;
+
 import static com.bolta.exchange.exchange.domain.Currency.KRW;
 import static com.bolta.exchange.exchange.domain.Currency.USD;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,10 +20,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 class ExchangeRateClientTest {
 
-    @Value("${currency-layer.base-url}")
+    @Value("${api-layer.base-url}")
     private String baseUrl;
-    @Value("${currency-layer.access-key}")
+    @Value("${api-layer.access-key}")
     private String accessKey;
+    @Value("$${api-layer.allowed-sources}")
+    private List<Currency> allowedSources;
+    @Value("$${api-layer.allowed-targets}")
+    private List<Currency> allowedTargets;
 
     private static final Currency VALID_SOURCE = USD;
     private static final Currency VALID_TARGET = KRW;
@@ -32,7 +38,7 @@ class ExchangeRateClientTest {
     @EnumSource(value = Currency.class, names = {"JPY","KRW","PHP"})
     void func1(Currency target){
         ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,target);
+        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,target,allowedSources,allowedTargets);
         assertThat(exchangeRateResponse.isSuccess()).isTrue();
     }
 
@@ -41,7 +47,7 @@ class ExchangeRateClientTest {
     void failGetApiDataWhenInvalidBaseUrl(){
         String invalidBaseUrl = "invalidUrl";
         ExchangeRateClient exchangeRateClient = new ExchangeRateClient(invalidBaseUrl,accessKey);
-        assertThatThrownBy(() -> exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET))
+        assertThatThrownBy(() -> exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets))
                 .isInstanceOf(WebClientRequestException.class);
     }
 
@@ -50,7 +56,7 @@ class ExchangeRateClientTest {
     void failGetApiDataWhenInvalidAccessKey(){
         String invalidAccessKey = "invalidKey";
         ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,invalidAccessKey);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET);
+        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
         exchangeRateResponse.getExchangeRate(VALID_TARGET);
     }
 
@@ -58,7 +64,7 @@ class ExchangeRateClientTest {
     @Test
     void func5(){
         ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET);
+        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
         System.out.println("exchangeRateResponse = " + exchangeRateResponse);
     }
 

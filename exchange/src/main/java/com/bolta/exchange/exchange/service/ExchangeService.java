@@ -1,8 +1,8 @@
 package com.bolta.exchange.exchange.service;
 
 
-import com.bolta.exchange.api.domain.ExchangeRateClient;
-import com.bolta.exchange.api.dto.ExchangeRateResponse;
+import com.bolta.exchange.apilayer.domain.ExchangeRateClient;
+import com.bolta.exchange.apilayer.dto.ExchangeRateResponse;
 import com.bolta.exchange.exchange.domain.Currency;
 import com.bolta.exchange.exchange.domain.Exchange;
 import com.bolta.exchange.exchange.domain.Remittance;
@@ -13,20 +13,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
 
-    @Value("${currency-layer.base-url}")
+    @Value("${api-layer.base-url}")
     private String baseUrl;
-    @Value("${currency-layer.access-key}")
+    @Value("${api-layer.access-key}")
     private String accessKey;
+    @Value("$${api-layer.allowed-sources}")
+    private List<Currency> allowedSources;
+    @Value("$${api-layer.allowed-targets}")
+    private List<Currency> allowedTargets;
 
     @Transactional
     public double getExchangeRate(Currency source, Currency target){
         ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(source,target);
+        ExchangeRateResponse exchangeRateResponse =
+                exchangeRateClient.getExchangeRate(source,target,allowedSources,allowedTargets);
         return exchangeRateResponse.getExchangeRate(target);
     }
 
