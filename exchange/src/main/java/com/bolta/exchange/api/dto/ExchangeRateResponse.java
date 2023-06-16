@@ -26,7 +26,7 @@ public class ExchangeRateResponse {
     }
 
     private void ValidateThatResponseContainsTargetData(String key) {
-        if(!quotes.containsKey(key)) throw new RuntimeException(NOT_FOUND_TARGET_DATA);
+        if(!quotes.containsKey(key)) throw new IllegalArgumentException(NOT_FOUND_TARGET_DATA);
     }
 
     public boolean isSuccess() {

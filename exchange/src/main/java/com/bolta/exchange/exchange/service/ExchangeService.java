@@ -42,7 +42,7 @@ public class ExchangeService {
         Remittance remittance = Remittance.from(givenRemittance);
         double exchangeRate = getExchangeRate(source,target);
 
-        Exchange exchange = Exchange.of(source, target, remittance, exchangeRate);
+        Exchange exchange = Exchange.of(source,target,remittance,exchangeRate);
         exchangeRepository.save(exchange);
 
         return new ExchangeMoneyResponse(exchange.getExchangedMoney(),target);

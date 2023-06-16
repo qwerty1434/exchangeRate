@@ -31,8 +31,8 @@ class ExchangeRateClientTest {
     @ParameterizedTest
     @EnumSource(value = Currency.class, names = {"JPY","KRW","PHP"})
     void func1(Currency target){
-        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl, accessKey);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE, target);
+        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
+        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,target);
         assertThat(exchangeRateResponse.isSuccess()).isTrue();
     }
 
@@ -40,8 +40,8 @@ class ExchangeRateClientTest {
     @Test
     void failGetApiDataWhenInvalidBaseUrl(){
         String invalidBaseUrl = "invalidUrl";
-        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(invalidBaseUrl, accessKey);
-        assertThatThrownBy(() -> exchangeRateClient.getExchangeRate(VALID_SOURCE, VALID_TARGET))
+        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(invalidBaseUrl,accessKey);
+        assertThatThrownBy(() -> exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET))
                 .isInstanceOf(WebClientRequestException.class);
     }
 
@@ -49,16 +49,16 @@ class ExchangeRateClientTest {
     @Test
     void failGetApiDataWhenInvalidAccessKey(){
         String invalidAccessKey = "invalidKey";
-        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl, invalidAccessKey);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE, VALID_TARGET);
+        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,invalidAccessKey);
+        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET);
         exchangeRateResponse.getExchangeRate(VALID_TARGET);
     }
 
     @DisplayName("정상 성공")
     @Test
     void func5(){
-        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl, accessKey);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE, VALID_TARGET);
+        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
+        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET);
         System.out.println("exchangeRateResponse = " + exchangeRateResponse);
     }
 

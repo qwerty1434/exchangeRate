@@ -21,7 +21,7 @@ class RemittanceTest {
 
     @DisplayName("0미만, 10_000초과의 값이 주어지면 Remittance 생성 실패")
     @ParameterizedTest
-    @ValueSource(doubles = {-10,-0.001,10_001,Double.MAX_VALUE})
+    @ValueSource(doubles = {-10, -0.001, 10_001, Double.MAX_VALUE})
     void failCreatingRemittanceWhenInvalidValue(double value){
         assertThatThrownBy(() -> Remittance.from(value))
                         .isInstanceOf(IllegalArgumentException.class);
