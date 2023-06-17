@@ -14,12 +14,14 @@ public class Exchange {
     double exchangeRate;
 
     protected Exchange(){}
+
     private Exchange(Currency source, Currency target, Remittance remittance, double exchangeRate) {
         this.source = source;
         this.target = target;
         this.remittance = remittance;
         this.exchangeRate = exchangeRate;
     }
+
     public static Exchange of(Currency source, Currency target, Remittance remittance, double exchangeRate){
         return new Exchange(source,target,remittance,exchangeRate);
     }
@@ -31,4 +33,5 @@ public class Exchange {
     public Long getId() {
         return id;
     }
+
 }

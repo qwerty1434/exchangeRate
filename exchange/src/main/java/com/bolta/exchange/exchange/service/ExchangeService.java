@@ -19,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
-
     @Value("${api-layer.base-url}")
     private String baseUrl;
     @Value("${api-layer.access-key}")
@@ -58,4 +57,5 @@ public class ExchangeService {
         Exchange exchange = Exchange.of(source,target,remittance,exchangeRate);
         return exchangeRepository.save(exchange);
     }
+
 }

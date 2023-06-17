@@ -15,7 +15,6 @@ public class ExchangeRateResponse {
     private Map<String,Double> quotes;
     private ErrorResponse error;
 
-
     public double getExchangeRate(Currency target){
         validateApiConnectionIsSuccess();
         String key = source.toString()+target.toString();
@@ -48,4 +47,5 @@ public class ExchangeRateResponse {
     public ErrorResponse getError() {
         return error;
     }
+
 }

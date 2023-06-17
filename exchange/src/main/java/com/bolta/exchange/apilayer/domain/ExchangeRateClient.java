@@ -9,7 +9,6 @@ import java.util.List;
 import static com.bolta.exchange.global.exception.ErrorMessage.*;
 
 public class ExchangeRateClient {
-
     private final String requestUrl;
 
     public ExchangeRateClient(String baseUrl, String accessKey) {
@@ -46,17 +45,19 @@ public class ExchangeRateClient {
         if(source == target) throw
                 new IllegalArgumentException(SAME_CURRENCY_ERROR.getMessage());
     }
+
     private void validateSourceCurrency(Currency source, List<Currency> allowedSources){
         if(!isAllowedValue(source,allowedSources)) throw
                 new IllegalArgumentException(INVALID_SOURCE_VALUE_ERROR.getMessage());
     }
+
     private void validateTargetCurrency(Currency target, List<Currency> allowedTargets){
         if(!isAllowedValue(target,allowedTargets)) throw
                 new IllegalArgumentException(INVALID_TARGET_VALUE_ERROR.getMessage());
     }
+
     private boolean isAllowedValue(Currency currency, List<Currency> allowedCurrencies){
         return allowedCurrencies.contains(currency);
     }
-
 
 }

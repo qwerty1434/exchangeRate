@@ -18,4 +18,5 @@ public class ExchangeMoneyResponse {
     public Currency getCurrency() {
         return currency;
     }
+
 }

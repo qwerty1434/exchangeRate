@@ -9,4 +9,5 @@ public class ApiCallFailedException extends RuntimeException {
         super(errorResponse.getInfo());
         this.errorResponse = errorResponse;
     }
+
 }

@@ -8,7 +8,6 @@ import static com.bolta.exchange.exchange.domain.Currency.USD;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ExchangeTest {
-
     private static final Currency VALID_SOURCE = USD;
     private static final Currency VALID_TARGET = KRW;
 

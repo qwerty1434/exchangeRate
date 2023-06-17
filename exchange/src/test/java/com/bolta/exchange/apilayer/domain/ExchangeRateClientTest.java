@@ -4,8 +4,6 @@ import com.bolta.exchange.apilayer.dto.ExchangeRateResponse;
 import com.bolta.exchange.exchange.domain.Currency;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -24,8 +22,8 @@ class ExchangeRateClientTest {
     private String baseUrl;
     @Value("${api-layer.access-key}")
     private String accessKey;
-    private final List<Currency> allowedSources = List.of(USD);
-    private final List<Currency> allowedTargets = List.of(JPY,KRW,PHP);
+    private static final List<Currency> allowedSources = List.of(USD);
+    private static final List<Currency> allowedTargets = List.of(JPY,KRW,PHP);
     private static final Currency VALID_SOURCE = USD;
     private static final Currency VALID_TARGET = KRW;
 
@@ -106,6 +104,5 @@ class ExchangeRateClientTest {
         assertThat(exchangeRateResponse.isSuccess()).isTrue();
         assertThat(exchangeRateResponse.getExchangeRate(VALID_TARGET)).isGreaterThan(0d);
     }
-
 
 }
