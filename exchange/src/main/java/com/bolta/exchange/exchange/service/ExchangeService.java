@@ -49,9 +49,13 @@ public class ExchangeService {
         Remittance remittance = Remittance.from(givenRemittance);
         double exchangeRate = getExchangeRate(source,target);
 
-        Exchange exchange = Exchange.of(source,target,remittance,exchangeRate);
-        exchangeRepository.save(exchange);
+        Exchange exchange = saveExchange(source,target,remittance,exchangeRate);
 
-        return new ExchangeMoneyResponse(exchange.getExchangedMoney(),target);
+        return new ExchangeMoneyResponse(exchange.calculateRemittance(),target);
+    }
+
+    public Exchange saveExchange(Currency source, Currency target, Remittance remittance, double exchangeRate){
+        Exchange exchange = Exchange.of(source,target,remittance,exchangeRate);
+        return exchangeRepository.save(exchange);
     }
 }

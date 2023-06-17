@@ -10,62 +10,102 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.bolta.exchange.exchange.domain.Currency.KRW;
-import static com.bolta.exchange.exchange.domain.Currency.USD;
+import static com.bolta.exchange.exchange.domain.Currency.*;
+import static com.bolta.exchange.global.exception.ErrorMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class ExchangeRateClientTest {
-
     @Value("${api-layer.base-url}")
     private String baseUrl;
     @Value("${api-layer.access-key}")
     private String accessKey;
-    @Value("$${api-layer.allowed-sources}")
-    private List<Currency> allowedSources;
-    @Value("$${api-layer.allowed-targets}")
-    private List<Currency> allowedTargets;
-
+    private final List<Currency> allowedSources = List.of(USD);
+    private final List<Currency> allowedTargets = List.of(JPY,KRW,PHP);
     private static final Currency VALID_SOURCE = USD;
     private static final Currency VALID_TARGET = KRW;
 
-
-    @DisplayName("유효한 api와 url로 환율 가져오기")
-    @ParameterizedTest
-    @EnumSource(value = Currency.class, names = {"JPY","KRW","PHP"})
-    void func1(Currency target){
-        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,target,allowedSources,allowedTargets);
-        assertThat(exchangeRateResponse.isSuccess()).isTrue();
-    }
-
-    @DisplayName("유효하지 않은 url주소를 사용하면 api로 환율 가져오기 실패")
+    @DisplayName("유효하지 않은 url주소를 사용했을 때 webClientRequestException 발생")
     @Test
-    void failGetApiDataWhenInvalidBaseUrl(){
+    void testExchangeRateClientWithInvalidUrlAddress(){
         String invalidBaseUrl = "invalidUrl";
         ExchangeRateClient exchangeRateClient = new ExchangeRateClient(invalidBaseUrl,accessKey);
-        assertThatThrownBy(() -> exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets))
+
+        assertThatThrownBy(() -> exchangeRateClient
+                .getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets))
                 .isInstanceOf(WebClientRequestException.class);
     }
 
-    @DisplayName("유효하지 않은 accessKey를 사용하면 api로 환율 가져오기 실패")
+    @DisplayName("유효하지 않은 accessKey를 사용했을 때 api서버로부터 실패 응답을 받음")
     @Test
-    void failGetApiDataWhenInvalidAccessKey(){
+    void testExchangeRateClientWithInvalidAccessKey(){
         String invalidAccessKey = "invalidKey";
         ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,invalidAccessKey);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
-        exchangeRateResponse.getExchangeRate(VALID_TARGET);
+
+        ExchangeRateResponse exchangeRateResponse = exchangeRateClient
+                .getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
+
+        assertThat(exchangeRateResponse.isSuccess()).isFalse();
+        assertThat(exchangeRateResponse.getError().getType()).isEqualTo("invalid_access_key");
     }
 
-    @DisplayName("정상 성공")
+    @DisplayName("source와 target이 동일하면 IllegalArgumentException 발생")
     @Test
-    void func5(){
+    void testExchangeRateClientWithSameSourceAndTarget(){
+        Currency source = USD;
+        Currency target = USD;
         ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
-        ExchangeRateResponse exchangeRateResponse = exchangeRateClient.getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
-        System.out.println("exchangeRateResponse = " + exchangeRateResponse);
+
+        assertThatThrownBy(() -> exchangeRateClient
+                .getExchangeRate(source,target,allowedSources,allowedTargets))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(SAME_CURRENCY_ERROR.getMessage());
     }
+
+    @DisplayName("유효하지 않은 source로 환율을 조회할 때 IllegalArgumentException 발생")
+    @Test
+    void testExchangeRateClientWithInvalidSource(){
+        List<Currency> customAllowedSources = new ArrayList<>();
+        customAllowedSources.add(USD);
+        Currency excludedSource = JPY;
+        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
+
+        assertThatThrownBy(() -> exchangeRateClient
+                .getExchangeRate(excludedSource,VALID_TARGET,customAllowedSources,allowedTargets))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(INVALID_SOURCE_VALUE_ERROR.getMessage());
+    }
+
+    @DisplayName("유효하지 않은 target으로 환율을 조회할 때 IllegalArgumentException 발생")
+    @Test
+    void testExchangeRateClientWithInvalidTarget(){
+        List<Currency> customAllowedTargets = new ArrayList<>();
+        customAllowedTargets.add(JPY);
+        customAllowedTargets.add(PHP);
+        Currency excludedTarget = KRW;
+        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
+
+        assertThatThrownBy(() -> exchangeRateClient
+                .getExchangeRate(VALID_SOURCE,excludedTarget,allowedSources,customAllowedTargets))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(INVALID_TARGET_VALUE_ERROR.getMessage());
+    }
+
+    @DisplayName("유효한 값들로 환율 조회에 성공")
+    @Test
+    void testExchangeRateClientWithValidVariables(){
+        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
+
+        ExchangeRateResponse exchangeRateResponse = exchangeRateClient
+                .getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
+
+        assertThat(exchangeRateResponse.isSuccess()).isTrue();
+        assertThat(exchangeRateResponse.getExchangeRate(VALID_TARGET)).isGreaterThan(0d);
+    }
+
 
 }

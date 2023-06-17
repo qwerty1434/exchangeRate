@@ -11,7 +11,6 @@ public class Exchange {
     private Currency target;
     @Embedded
     private Remittance remittance;
-
     double exchangeRate;
 
     protected Exchange(){}
@@ -25,7 +24,11 @@ public class Exchange {
         return new Exchange(source,target,remittance,exchangeRate);
     }
 
-    public double getExchangedMoney(){
+    public double calculateRemittance(){
         return remittance.getRemittance() * exchangeRate;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

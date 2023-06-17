@@ -10,4 +10,12 @@ public class ExchangeMoneyResponse {
         this.remittance = remittance;
         this.currency = currency;
     }
+
+    public double getRemittance() {
+        return remittance;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
 }
