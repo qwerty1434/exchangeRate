@@ -2,7 +2,6 @@ package com.bolta.exchange.exchange.domain;
 
 import static com.bolta.exchange.global.exception.ErrorMessage.INVALID_REMITTANCE_VALUE_ERROR;
 
-
 public class Remittance {
     private double remittance;
 

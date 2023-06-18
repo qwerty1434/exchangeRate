@@ -1,6 +1,5 @@
 package com.bolta.exchange.exchange.service;
 
-
 import com.bolta.exchange.apilayer.domain.ExchangeRateClient;
 import com.bolta.exchange.apilayer.dto.ExchangeRateResponse;
 import com.bolta.exchange.exchange.domain.Currency;
@@ -19,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
+
     @Value("${api-layer.base-url}")
     private String baseUrl;
     @Value("${api-layer.access-key}")
@@ -30,7 +30,7 @@ public class ExchangeService {
 
     @Transactional
     public double getExchangeRate(Currency source, Currency target){
-        ExchangeRateClient exchangeRateClient = new ExchangeRateClient(baseUrl,accessKey);
+        ExchangeRateClient exchangeRateClient = ExchangeRateClient.getInstance(baseUrl,accessKey);
         ExchangeRateResponse exchangeRateResponse =
                 exchangeRateClient.getExchangeRate(source,target,allowedSources,allowedTargets);
         return exchangeRateResponse.getExchangeRate(target);

@@ -8,9 +8,9 @@ import java.util.NoSuchElementException;
 
 import static com.bolta.exchange.global.exception.ErrorMessage.RATE_NOT_FOUND_ERROR;
 
-
 public class ExchangeRateResponse {
     private boolean success;
+    private int timestamp;
     private Currency source;
     private Map<String,Double> quotes;
     private ErrorResponse error;
@@ -34,6 +34,10 @@ public class ExchangeRateResponse {
 
     public boolean isSuccess() {
         return success;
+    }
+
+    public int getTimestamp() {
+        return timestamp;
     }
 
     public Currency getSource() {

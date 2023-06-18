@@ -36,13 +36,14 @@ class ExchangeServiceTest {
         assertThat(savedExchange).isNotNull();
     }
 
-    @DisplayName("exchangeMoney가 Currency를 제대로 바꾸는지 확인")
+    @DisplayName("exchangeMoney는 Target Currency와 변환된 Remittance를 반환")
     @Test
     public void testExchangeMoneyCurrency(){
         double givenRemittance = 1_000;
         ExchangeMoneyResponse exchangeMoneyResponse =
                 exchangeService.exchangeMoney(VALID_SOURCE, VALID_TARGET, givenRemittance);
         assertThat(VALID_TARGET).isEqualTo(exchangeMoneyResponse.getCurrency());
+        assertThat(exchangeMoneyResponse.getRemittance()).isNotEqualTo(givenRemittance);
     }
 
 }
