@@ -13,7 +13,7 @@ public class ExchangeRateResponse {
     private int timestamp;
     private Currency source;
     private Map<String,Double> quotes;
-    private ErrorResponse error;
+    private ApiErrorResponse error;
 
     public double getExchangeRate(Currency target){
         validateApiConnectionIsSuccess();
@@ -48,7 +48,7 @@ public class ExchangeRateResponse {
         return quotes;
     }
 
-    public ErrorResponse getError() {
+    public ApiErrorResponse getError() {
         return error;
     }
 

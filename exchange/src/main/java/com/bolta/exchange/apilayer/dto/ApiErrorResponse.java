@@ -1,6 +1,6 @@
 package com.bolta.exchange.apilayer.dto;
 
-public class ErrorResponse {
+public class ApiErrorResponse {
     private int code;
     private String type;
     private String info;

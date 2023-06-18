@@ -1,13 +1,13 @@
 package com.bolta.exchange.global.exception;
 
-import com.bolta.exchange.apilayer.dto.ErrorResponse;
+import com.bolta.exchange.apilayer.dto.ApiErrorResponse;
 
 public class ApiCallFailedException extends RuntimeException {
-    ErrorResponse errorResponse;
+    ApiErrorResponse apiErrorResponse;
 
-    public ApiCallFailedException(ErrorResponse errorResponse) {
-        super(errorResponse.getInfo());
-        this.errorResponse = errorResponse;
+    public ApiCallFailedException(ApiErrorResponse apiErrorResponse) {
+        super(apiErrorResponse.getInfo());
+        this.apiErrorResponse = apiErrorResponse;
     }
 
 }
