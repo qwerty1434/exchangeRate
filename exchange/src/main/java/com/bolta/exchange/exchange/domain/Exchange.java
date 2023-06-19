@@ -5,9 +5,11 @@ import javax.persistence.*;
 @Entity
 public class Exchange {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Enumerated(EnumType.STRING)
     private Currency source;
+    @Enumerated(EnumType.STRING)
     private Currency target;
     @Embedded
     private Remittance remittance;
