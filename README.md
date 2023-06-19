@@ -1,11 +1,17 @@
 # 환율계산 서비스 API
 오픈 API를 이용한 "환율계산 서비스"입니다.
 
+## 사용 버전
+- Java: 11
+- Spring-boot: 2.7.12
+- Spring-webflux: 5.3.27
+- JUnit: 5.8.2
+- H2-Database: 2.1.214
+
 ## 실행 파일
 - 파일명: exchange.jar
 - 위치: 프로젝트 최상단
 - 실행 방법: `java -jar exchange.jar`
-
 
 # API 명세
 ## 환율 조회 API
