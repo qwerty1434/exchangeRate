@@ -36,6 +36,7 @@
 3. 1과 2로 해결하지 못한 예외는 Runtime Exception을 상속 받은 Custom Exception을 정의해 예외를 처리했습니다.
 
 <hr>
+
 # API 명세
 ## 환율 조회 API
 
