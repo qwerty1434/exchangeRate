@@ -13,6 +13,29 @@
 - 위치: 프로젝트 최상단
 - 실행 방법: `java -jar exchange.jar`
 
+## 핵심 작업
+
+### 1. 외부 API를 요청하는 ExchangeRateClient를 singleton객체로 구성했습니다.
+- 적용한 이유
+    - 인스턴스 변수인 requestUrl이 대부분 동일한데, 모든 유저의 요청마다 ExchangeRateClient객체를 생성하는 건 메모리 낭비라고 생각했습니다.
+- 적용 방법
+    - 인스턴스 변수가 다르면 다른 객체를 가지도록 정적 변수인 ConcurrentHashMap에 singleton 객체를 보관했습니다.
+    - 인스턴스를 획득하는 getInstance메서드에 synchronized키워드를 선언해 동시에 여러 사용자가 접근해 여러 singleton객체가 생성되는 걸 방지했습니다.
+
+### 2. 단기간에 많은 API서버 요청을 방지하기 위한 cache 활용했습니다.
+- 적용한 이유
+    - 단기간에 다수의 요청을 보내면 API서버가 응답을 거부하는 사실을 확인했습니다.
+    - 대량의 사용자가 서비스를 사용했을 때 API응답이 거부되는 상황이 자주 발생할 거라 판단해 데이터의 실시간성을 포기하고 이전 요청을 일부 재활용하는 방식으로 시스템을 설계했습니다.
+- 적용 방법
+    - ExchangeRateClient에 API요청 정보와 요청 결과를 담는 Map변수를 선언했습니다.
+    - 요청하려는 값에 대한 정보가 cache에 존재하고, CACHE_EXPIRATION_SECONDS을 초과하지 않았다면 API서버에 요청하지 않고 캐싱된 값을 활용합니다. 현재 CACHE_EXPIRATION_SECONDS는 60초로 설정되어 있습니다.
+
+### 3. 예외 처리에 대한 기준을 수립하고 해당 기준에 맞춰 예외를 관리했습니다.
+1. IllegalArgumentException처럼 이미 정의된 예외를 최대한 활용했습니다. 
+2. API서버에서 반환하는 예외를 최대한 활용했습니다. API서버에서 반환하는 예외는 Custom Exception으로의 변환을 거쳐 사용자에게 보여집니다.
+3. 1과 2로 해결하지 못한 예외는 Runtime Exception을 상속 받은 Custom Exception을 정의해 예외를 처리했습니다.
+
+<hr>
 # API 명세
 ## 환율 조회 API
 
