@@ -27,7 +27,7 @@ class ExchangeRateClientTest {
     private static final Currency VALID_SOURCE = USD;
     private static final Currency VALID_TARGET = KRW;
 
-    @DisplayName("유효하지 않은 url주소를 사용했을 때 webClientRequestException 발생")
+    @DisplayName("유효하지 않은 url주소를 사용했을 때 webClientRequestException이 발생합니다.")
     @Test
     void testExchangeRateClientWithInvalidUrlAddress(){
         String invalidBaseUrl = "invalidUrl";
@@ -38,7 +38,7 @@ class ExchangeRateClientTest {
                 .isInstanceOf(WebClientRequestException.class);
     }
 
-    @DisplayName("유효하지 않은 accessKey를 사용했을 때 api서버로부터 실패 응답을 받음")
+    @DisplayName("유효하지 않은 accessKey를 사용했을 때 api서버로부터 실패 응답을 받게 됩니다.")
     @Test
     void testExchangeRateClientWithInvalidAccessKey(){
         String invalidAccessKey = "invalidKey";
@@ -51,7 +51,7 @@ class ExchangeRateClientTest {
         assertThat(exchangeRateResponse.getError().getType()).isEqualTo("invalid_access_key");
     }
 
-    @DisplayName("source와 target이 동일하면 IllegalArgumentException 발생")
+    @DisplayName("source와 target이 동일하면 IllegalArgumentException이 발생합니다.")
     @Test
     void testExchangeRateClientWithSameSourceAndTarget(){
         Currency source = USD;
@@ -64,7 +64,7 @@ class ExchangeRateClientTest {
                 .hasMessageContaining(SAME_CURRENCY_ERROR.getMessage());
     }
 
-    @DisplayName("유효하지 않은 source로 환율을 조회할 때 IllegalArgumentException 발생")
+    @DisplayName("유효하지 않은 source로 환율을 조회하면 IllegalArgumentException이 발생합니다.")
     @Test
     void testExchangeRateClientWithInvalidSource(){
         List<Currency> customAllowedSources = new ArrayList<>();
@@ -78,7 +78,7 @@ class ExchangeRateClientTest {
                 .hasMessageContaining(INVALID_SOURCE_VALUE_ERROR.getMessage());
     }
 
-    @DisplayName("유효하지 않은 target으로 환율을 조회할 때 IllegalArgumentException 발생")
+    @DisplayName("유효하지 않은 target으로 환율을 조회하면 IllegalArgumentException이 발생합니다.")
     @Test
     void testExchangeRateClientWithInvalidTarget(){
         List<Currency> customAllowedTargets = new ArrayList<>();
@@ -93,7 +93,7 @@ class ExchangeRateClientTest {
                 .hasMessageContaining(INVALID_TARGET_VALUE_ERROR.getMessage());
     }
 
-    @DisplayName("유효한 값들로 환율 조회에 성공")
+    @DisplayName("유효한 값들로 환율을 조회하면 요청이 성공합니다.")
     @Test
     void testExchangeRateClientWithValidVariables(){
         ExchangeRateClient exchangeRateClient = ExchangeRateClient.getInstance(baseUrl,accessKey);

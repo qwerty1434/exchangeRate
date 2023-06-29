@@ -23,7 +23,7 @@ class ExchangeServiceTest {
     @Autowired
     ExchangeRepository exchangeRepository;
 
-    @DisplayName("Exchange엔티티가 제대로 저장되는지 확인")
+    @DisplayName("Exchange엔티티를 저장합니다.")
     @Test
     public void testSaveExchange(){
         Remittance remittance = Remittance.from(1_000);
@@ -36,7 +36,7 @@ class ExchangeServiceTest {
         assertThat(savedExchange).isNotNull();
     }
 
-    @DisplayName("exchangeMoney는 Target Currency와 변환된 Remittance를 반환")
+    @DisplayName("환전을 시도하면 Target Currency로 변환된 돈을 반환합니다.")
     @Test
     public void testExchangeMoneyCurrency(){
         double givenRemittance = 1_000;

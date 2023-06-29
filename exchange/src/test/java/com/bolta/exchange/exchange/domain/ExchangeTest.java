@@ -11,7 +11,7 @@ class ExchangeTest {
     private static final Currency VALID_SOURCE = USD;
     private static final Currency VALID_TARGET = KRW;
 
-    @DisplayName("환율과 송금액을 이용해 환전 금액을 올바르게 계산하는지 확인")
+    @DisplayName("환율과 송금액을 이용해 환전 금액을 계산합니다.")
     @Test
     public void testCalculatingRemittanceWithExchangeEntity(){
         double remittanceValue = 1_000;
