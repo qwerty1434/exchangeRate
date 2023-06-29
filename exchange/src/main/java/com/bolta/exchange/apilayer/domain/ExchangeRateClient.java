@@ -30,6 +30,10 @@ public class ExchangeRateClient {
         return client;
     }
 
+    private static String createClientMapKey(String baseUrl, String accessKey){
+        return baseUrl + accessKey;
+    }
+
     public ExchangeRateResponse getExchangeRate(Currency source, Currency target,
                                                 List<Currency> allowedSources, List<Currency> allowedTargets) {
         assertParams(source, target, allowedSources, allowedTargets);
@@ -45,10 +49,6 @@ public class ExchangeRateClient {
                 .block();
         cache.put(cacheKey,response);
         return response;
-    }
-
-    private static String createClientMapKey(String baseUrl, String accessKey){
-        return baseUrl + accessKey;
     }
 
     private String createCacheKey(Currency source, Currency target) {
