@@ -8,7 +8,7 @@ public class Remittance {
     protected Remittance() {}
 
     private Remittance(double remittance) {
-        validateRemittanceValueRange(remittance);
+        assertRemittanceValueRange(remittance);
         this.remittance = remittance;
     }
 
@@ -16,7 +16,7 @@ public class Remittance {
         return new Remittance(remittance);
     }
 
-    public void validateRemittanceValueRange(double remittance){
+    public void assertRemittanceValueRange(double remittance){
         if(remittance < 0 || remittance > 10_000) throw
                 new IllegalArgumentException(INVALID_REMITTANCE_VALUE_ERROR.getMessage());
     }

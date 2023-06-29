@@ -32,7 +32,7 @@ public class ExchangeRateClient {
 
     public ExchangeRateResponse getExchangeRate(Currency source, Currency target,
                                                 List<Currency> allowedSources, List<Currency> allowedTargets) {
-        validateParams(source, target, allowedSources, allowedTargets);
+        assertParams(source, target, allowedSources, allowedTargets);
 
         String cacheKey = createCacheKey(source, target);
         if(isCacheValidate(cacheKey)) return cache.get(cacheKey);
@@ -69,24 +69,24 @@ public class ExchangeRateClient {
         return urlBuilder.toString();
     }
 
-    private void validateParams(Currency source, Currency target,
-                                List<Currency> allowedSources, List<Currency> allowedTargets){
-        validateSourceTargetDifferent(source,target);
-        validateSourceCurrency(source,allowedSources);
-        validateTargetCurrency(target,allowedTargets);
+    private void assertParams(Currency source, Currency target,
+                              List<Currency> allowedSources, List<Currency> allowedTargets){
+        assertSourceTargetDifferent(source,target);
+        assertSourceCurrency(source,allowedSources);
+        assertTargetCurrency(target,allowedTargets);
     }
 
-    private void validateSourceTargetDifferent(Currency source, Currency target){
+    private void assertSourceTargetDifferent(Currency source, Currency target){
         if(source == target) throw
                 new IllegalArgumentException(SAME_CURRENCY_ERROR.getMessage());
     }
 
-    private void validateSourceCurrency(Currency source, List<Currency> allowedSources){
+    private void assertSourceCurrency(Currency source, List<Currency> allowedSources){
         if(!isAllowedValue(source,allowedSources)) throw
                 new IllegalArgumentException(INVALID_SOURCE_VALUE_ERROR.getMessage());
     }
 
-    private void validateTargetCurrency(Currency target, List<Currency> allowedTargets){
+    private void assertTargetCurrency(Currency target, List<Currency> allowedTargets){
         if(!isAllowedValue(target,allowedTargets)) throw
                 new IllegalArgumentException(INVALID_TARGET_VALUE_ERROR.getMessage());
     }
