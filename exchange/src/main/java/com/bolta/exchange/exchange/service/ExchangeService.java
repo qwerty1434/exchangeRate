@@ -53,6 +53,7 @@ public class ExchangeService {
         return new ExchangeMoneyResponse(exchange.calculateRemittance(),target);
     }
 
+    @Transactional
     public Exchange saveExchange(Currency source, Currency target, Remittance remittance, double exchangeRate){
         Exchange exchange = Exchange.of(source,target,remittance,exchangeRate);
         return exchangeRepository.save(exchange);
