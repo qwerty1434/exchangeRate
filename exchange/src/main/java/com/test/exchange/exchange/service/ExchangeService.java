@@ -28,7 +28,7 @@ public class ExchangeService {
     @Value("$${api-layer.allowed-targets}")
     private List<Currency> allowedTargets;
 
-    @Transactional
+
     public double getExchangeRate(Currency source, Currency target){
         ExchangeRateClient exchangeRateClient = ExchangeRateClient.getInstance(baseUrl,accessKey);
         ExchangeRateResponse exchangeRateResponse =
@@ -36,14 +36,14 @@ public class ExchangeService {
         return exchangeRateResponse.getExchangeRate(target);
     }
 
-    @Transactional
+
     public double getCalculatedRemittance(Currency source, Currency target, double givenRemittance){
         Remittance remittance = Remittance.from(givenRemittance);
         double exchangeRate = getExchangeRate(source,target);
         return remittance.calculate(exchangeRate);
     }
 
-    @Transactional
+
     public ExchangeMoneyResponse exchangeMoney(Currency source, Currency target, double givenRemittance){
         Remittance remittance = Remittance.from(givenRemittance);
         double exchangeRate = getExchangeRate(source,target);
