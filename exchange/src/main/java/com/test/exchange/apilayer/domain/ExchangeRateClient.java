@@ -2,17 +2,20 @@ package com.test.exchange.apilayer.domain;
 
 import com.test.exchange.apilayer.dto.ExchangeRateResponse;
 import com.test.exchange.exchange.domain.Currency;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.test.exchange.global.exception.ErrorMessage.*;
 
+@Slf4j
 public class ExchangeRateClient {
-    private static final ConcurrentHashMap<String,ExchangeRateClient> clientMap = new ConcurrentHashMap<>();
+    private static volatile ExchangeRateClient instance;
     private static final int CACHE_EXPIRATION_SECONDS = 60;
     private final String requestUrl;
     private final Map<String,ExchangeRateResponse> cache;
@@ -23,16 +26,16 @@ public class ExchangeRateClient {
     }
 
     public static synchronized ExchangeRateClient getInstance(String baseUrl, String accessKey) {
-        String clientMapKey = createClientMapKey(baseUrl,accessKey);
-        if(clientMap.containsKey(clientMapKey)) return clientMap.get(clientMapKey);
-        ExchangeRateClient client = new ExchangeRateClient(baseUrl,accessKey);
-        clientMap.put(clientMapKey,client);
-        return client;
+        if(instance == null){
+            synchronized(ExchangeRateClient.class){
+                if(instance == null){
+                    instance = new ExchangeRateClient(baseUrl,accessKey);
+                }
+            }
+        }
+        return instance;
     }
 
-    private static String createClientMapKey(String baseUrl, String accessKey){
-        return baseUrl + accessKey;
-    }
 
     public ExchangeRateResponse getExchangeRate(Currency source, Currency target,
                                                 List<Currency> allowedSources, List<Currency> allowedTargets) {
@@ -45,6 +48,11 @@ public class ExchangeRateClient {
                 .get()
                 .uri(makeUrl(source, target))
                 .retrieve()
+                .onStatus(HttpStatus::isError, res -> res.bodyToMono(String.class)
+                        .flatMap(error -> {
+                            log.error(error);
+                            return Mono.error(new RuntimeException(API_SERVER_ERROR.getMessage()));
+                        }))
                 .bodyToMono(ExchangeRateResponse.class)
                 .block();
         cache.put(cacheKey,response);
@@ -56,17 +64,14 @@ public class ExchangeRateClient {
     }
 
     private boolean isCacheValidate(String cacheKey){
-        if(cache.containsKey(cacheKey) &&
-                System.currentTimeMillis()/1000 - cache.get(cacheKey).getTimestamp() <= CACHE_EXPIRATION_SECONDS) return true;
-        return false;
+        return cache.containsKey(cacheKey) &&
+                System.currentTimeMillis() / 1000 - cache.get(cacheKey).getTimestamp() <= CACHE_EXPIRATION_SECONDS;
     }
 
     private String makeUrl(Currency source, Currency target){
-        StringBuilder urlBuilder = new StringBuilder();
-        urlBuilder.append(requestUrl);
-        urlBuilder.append("&source=" + source);
-        urlBuilder.append("&currencies=" + target);
-        return urlBuilder.toString();
+        return requestUrl
+                + "&source=" + source
+                + "&currencies=" + target;
     }
 
     private void assertParams(Currency source, Currency target,
@@ -82,17 +87,17 @@ public class ExchangeRateClient {
     }
 
     private void assertSourceCurrency(Currency source, List<Currency> allowedSources){
-        if(!isAllowedValue(source,allowedSources)) throw
+        if(isNotAllowedValue(source,allowedSources)) throw
                 new IllegalArgumentException(INVALID_SOURCE_VALUE_ERROR.getMessage());
     }
 
     private void assertTargetCurrency(Currency target, List<Currency> allowedTargets){
-        if(!isAllowedValue(target,allowedTargets)) throw
+        if(isNotAllowedValue(target,allowedTargets)) throw
                 new IllegalArgumentException(INVALID_TARGET_VALUE_ERROR.getMessage());
     }
 
-    private boolean isAllowedValue(Currency currency, List<Currency> allowedCurrencies){
-        return allowedCurrencies.contains(currency);
+    private boolean isNotAllowedValue(Currency currency, List<Currency> allowedCurrencies){
+        return !allowedCurrencies.contains(currency);
     }
 
 }
