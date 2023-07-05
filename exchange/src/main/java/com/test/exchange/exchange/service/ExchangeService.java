@@ -22,7 +22,7 @@ public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
     private final RedisService redisService;
 
-    private final int CACHE_VALIDATION_SECONDS = 60;
+    private final int CACHE_EXPIRATIONS_TIME = 60;
 
     @Value("${api-layer.base-url}")
     private String baseUrl;
@@ -42,7 +42,7 @@ public class ExchangeService {
             ExchangeRateResponse exchangeRateResponse =
                     exchangeRateClient.getExchangeRate(source,target,allowedSources,allowedTargets);
             double exchangeRate = exchangeRateResponse.getExchangeRate(target);
-            redisService.setValues(cacheKey,exchangeRate,Duration.ofSeconds(CACHE_VALIDATION_SECONDS));
+            redisService.setValues(cacheKey,exchangeRate,Duration.ofSeconds(CACHE_EXPIRATIONS_TIME));
             return exchangeRate;
         }
     }
