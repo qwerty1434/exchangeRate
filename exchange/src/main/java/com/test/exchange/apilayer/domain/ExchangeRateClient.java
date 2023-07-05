@@ -9,45 +9,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.test.exchange.global.exception.ErrorMessage.*;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 public class ExchangeRateClient {
-    private static volatile ExchangeRateClient instance;
-    private static final int CACHE_EXPIRATION_SECONDS = 60;
-    private final String requestUrl;
-    private final Map<String,ExchangeRateResponse> cache;
+    private String requestUrl;
 
     private ExchangeRateClient(String baseUrl, String accessKey) {
         requestUrl = baseUrl + "?access_key=" + accessKey;
-        cache = new HashMap<>();
     }
 
-    public static synchronized ExchangeRateClient getInstance(String baseUrl, String accessKey) {
-        if(instance == null){
-            synchronized(ExchangeRateClient.class){
-                if(instance == null){
-                    instance = new ExchangeRateClient(baseUrl,accessKey);
-                }
-            }
-        }
-        return instance;
+    public static ExchangeRateClient of(String baseUrl, String accessKey){
+        return new ExchangeRateClient(baseUrl,accessKey);
     }
-
 
     public ExchangeRateResponse getExchangeRate(Currency source, Currency target,
                                                 List<Currency> allowedSources, List<Currency> allowedTargets) {
         assertParams(source, target, allowedSources, allowedTargets);
-
-        String cacheKey = createCacheKey(source, target);
-        if(isCacheValidate(cacheKey)) return cache.get(cacheKey);
-
-        ExchangeRateResponse response = WebClient.create()
+        return WebClient.create()
                 .get()
                 .uri(makeUrl(source, target))
                 .retrieve()
@@ -55,17 +37,6 @@ public class ExchangeRateClient {
                         .flatMap(error -> Mono.error(new ApiServerDownException(ApiErrorResponse.of(INTERNAL_SERVER_ERROR.value(), error)))))
                 .bodyToMono(ExchangeRateResponse.class)
                 .block();
-        cache.put(cacheKey,response);
-        return response;
-    }
-
-    private String createCacheKey(Currency source, Currency target) {
-        return source.toString() + target.toString();
-    }
-
-    private boolean isCacheValidate(String cacheKey){
-        return cache.containsKey(cacheKey) &&
-                System.currentTimeMillis() / 1000 - cache.get(cacheKey).getTimestamp() <= CACHE_EXPIRATION_SECONDS;
     }
 
     private String makeUrl(Currency source, Currency target){

@@ -31,7 +31,7 @@ class ExchangeRateClientTest {
     @Test
     void testExchangeRateClientWithInvalidUrlAddress(){
         String invalidBaseUrl = "invalidUrl";
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.getInstance(invalidBaseUrl,accessKey);
+        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(invalidBaseUrl,accessKey);
 
         assertThatThrownBy(() -> exchangeRateClient
                 .getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets))
@@ -42,7 +42,7 @@ class ExchangeRateClientTest {
     @Test
     void testExchangeRateClientWithInvalidAccessKey(){
         String invalidAccessKey = "invalidKey";
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.getInstance(baseUrl,invalidAccessKey);
+        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,invalidAccessKey);
 
         ExchangeRateResponse exchangeRateResponse = exchangeRateClient
                 .getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
@@ -56,7 +56,7 @@ class ExchangeRateClientTest {
     void testExchangeRateClientWithSameSourceAndTarget(){
         Currency source = USD;
         Currency target = USD;
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.getInstance(baseUrl,accessKey);
+        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,accessKey);
 
         assertThatThrownBy(() -> exchangeRateClient
                 .getExchangeRate(source,target,allowedSources,allowedTargets))
@@ -70,7 +70,7 @@ class ExchangeRateClientTest {
         List<Currency> customAllowedSources = new ArrayList<>();
         customAllowedSources.add(USD);
         Currency excludedSource = JPY;
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.getInstance(baseUrl,accessKey);
+        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,accessKey);
 
         assertThatThrownBy(() -> exchangeRateClient
                 .getExchangeRate(excludedSource,VALID_TARGET,customAllowedSources,allowedTargets))
@@ -85,7 +85,7 @@ class ExchangeRateClientTest {
         customAllowedTargets.add(JPY);
         customAllowedTargets.add(PHP);
         Currency excludedTarget = KRW;
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.getInstance(baseUrl,accessKey);
+        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,accessKey);
 
         assertThatThrownBy(() -> exchangeRateClient
                 .getExchangeRate(VALID_SOURCE,excludedTarget,allowedSources,customAllowedTargets))
@@ -96,7 +96,7 @@ class ExchangeRateClientTest {
     @DisplayName("유효한 값들로 환율을 조회하면 요청이 성공합니다.")
     @Test
     void testExchangeRateClientWithValidVariables(){
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.getInstance(baseUrl,accessKey);
+        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,accessKey);
 
         ExchangeRateResponse exchangeRateResponse = exchangeRateClient
                 .getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);

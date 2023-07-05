@@ -1,7 +1,9 @@
 package com.test.exchange.apilayer.dto;
 
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class ApiErrorResponse {
     private int code;
     private String type;
