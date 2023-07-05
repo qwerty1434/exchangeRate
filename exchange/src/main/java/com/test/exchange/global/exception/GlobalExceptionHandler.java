@@ -8,11 +8,19 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
+import static com.test.exchange.global.exception.ErrorMessage.API_SERVER_ERROR;
 import static com.test.exchange.global.exception.ErrorMessage.INTERNAL_SERVER_ERROR;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ApiServerDownException.class)
+    protected ResponseEntity ApiServerDownException(ApiServerDownException e){
+        log.error("api server에서 문제가 생겼습니다.", e);
+        return ResponseEntity.internalServerError()
+                .body(ErrorResponse.of(API_SERVER_ERROR));
+    }
 
     @ExceptionHandler(ApiCallFailedException.class)
     protected ResponseEntity ApiCallFailedException(ApiCallFailedException e){

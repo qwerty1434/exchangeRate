@@ -1,7 +1,9 @@
 package com.test.exchange.apilayer.domain;
 
+import com.test.exchange.apilayer.dto.ApiErrorResponse;
 import com.test.exchange.apilayer.dto.ExchangeRateResponse;
 import com.test.exchange.exchange.domain.Currency;
+import com.test.exchange.global.exception.ApiServerDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.test.exchange.global.exception.ErrorMessage.*;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 public class ExchangeRateClient {
@@ -49,10 +52,7 @@ public class ExchangeRateClient {
                 .uri(makeUrl(source, target))
                 .retrieve()
                 .onStatus(HttpStatus::isError, res -> res.bodyToMono(String.class)
-                        .flatMap(error -> {
-                            log.error(error);
-                            return Mono.error(new RuntimeException(API_SERVER_ERROR.getMessage()));
-                        }))
+                        .flatMap(error -> Mono.error(new ApiServerDownException(ApiErrorResponse.of(INTERNAL_SERVER_ERROR.value(), error)))))
                 .bodyToMono(ExchangeRateResponse.class)
                 .block();
         cache.put(cacheKey,response);
