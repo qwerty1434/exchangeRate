@@ -53,12 +53,6 @@ public class ExchangeRateClient {
     }
 
 
-    private String makeUrl(String baseUrl, String accessKey, Currency source, Currency target){
-        return baseUrl
-                + "?access_key=" + accessKey
-                + "&source=" + source
-                + "&currencies=" + target;
-    }
     private String makeUrl(String baseUrl, String accessKey){
         return baseUrl
                 + "?access_key=" + accessKey;
