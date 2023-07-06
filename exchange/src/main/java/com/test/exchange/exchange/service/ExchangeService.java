@@ -20,10 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
-    private final RedisService redisService;
     private final ExchangeRateClient exchangeRateClient;
-
-    private final int CACHE_EXPIRATION_SECONDS = 60;
 
     @Value("${api-layer.base-url}")
     private String baseUrl;
@@ -60,10 +57,6 @@ public class ExchangeService {
     public Exchange saveExchange(Currency source, Currency target, Remittance remittance, double exchangeRate){
         Exchange exchange = Exchange.of(source,target,remittance,exchangeRate);
         return exchangeRepository.save(exchange);
-    }
-
-    private String makeCacheKey(Currency source, Currency target){
-        return source+""+target;
     }
 
 }
