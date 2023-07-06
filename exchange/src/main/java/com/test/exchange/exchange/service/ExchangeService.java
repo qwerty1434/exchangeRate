@@ -35,16 +35,10 @@ public class ExchangeService {
     private List<Currency> allowedTargets;
 
     public double getExchangeRate(Currency source, Currency target){
-        String cacheKey = makeCacheKey(source,target);
-        if(redisService.isExists(cacheKey)){
-            return redisService.getValues(cacheKey);
-        }else{
-            ExchangeRateResponse exchangeRateResponse =
-                    exchangeRateClient.getExchangeRate(baseUrl,accessKey,source,target,allowedSources,allowedTargets);
-            double exchangeRate = exchangeRateResponse.getExchangeRate(target);
-            redisService.setValues(cacheKey,exchangeRate,Duration.ofSeconds(CACHE_EXPIRATION_SECONDS));
-            return exchangeRate;
-        }
+        ExchangeRateResponse exchangeRateResponse =
+                exchangeRateClient.getExchangeRate(baseUrl,accessKey,source,target,allowedSources,allowedTargets);
+        double exchangeRate = exchangeRateResponse.getExchangeRate(target);
+        return exchangeRate;
     }
 
     public double getCalculatedRemittance(Currency source, Currency target, double givenRemittance){

@@ -1,5 +1,6 @@
 package com.test.exchange.redis;
 
+import com.test.exchange.apilayer.dto.ExchangeRateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -10,16 +11,16 @@ import java.time.Duration;
 @Service
 @RequiredArgsConstructor
 public class RedisService {
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, ExchangeRateResponse> redisTemplate;
 
-    public void setValues(String key, Double value, Duration duration) {
-        ValueOperations<String, String> values = redisTemplate.opsForValue();
-        values.set(key, Double.toString(value), duration);
+    public void setValues(String key, ExchangeRateResponse value, Duration duration) {
+        ValueOperations<String, ExchangeRateResponse> values = redisTemplate.opsForValue();
+        values.set(key, value, duration);
     }
 
-    public double getValues(String key) {
-        ValueOperations<String, String> values = redisTemplate.opsForValue();
-        return Double.parseDouble(values.get(key));
+    public ExchangeRateResponse getValues(String key) {
+        ValueOperations<String, ExchangeRateResponse> values = redisTemplate.opsForValue();
+        return values.get(key);
     }
 
     public boolean isExists(String key){
