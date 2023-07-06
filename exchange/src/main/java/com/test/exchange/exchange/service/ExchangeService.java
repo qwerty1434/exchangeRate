@@ -7,13 +7,11 @@ import com.test.exchange.exchange.domain.Exchange;
 import com.test.exchange.exchange.domain.Remittance;
 import com.test.exchange.exchange.dto.ExchangeMoneyResponse;
 import com.test.exchange.exchange.repository.ExchangeRepository;
-import com.test.exchange.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.util.List;
 
 @Service
