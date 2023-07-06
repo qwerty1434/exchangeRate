@@ -21,6 +21,7 @@ import java.util.List;
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
     private final RedisService redisService;
+    private final ExchangeRateClient exchangeRateClient;
 
     private final int CACHE_EXPIRATION_SECONDS = 60;
 
@@ -38,9 +39,8 @@ public class ExchangeService {
         if(redisService.isExists(cacheKey)){
             return redisService.getValues(cacheKey);
         }else{
-            ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,accessKey);
             ExchangeRateResponse exchangeRateResponse =
-                    exchangeRateClient.getExchangeRate(source,target,allowedSources,allowedTargets);
+                    exchangeRateClient.getExchangeRate(baseUrl,accessKey,source,target,allowedSources,allowedTargets);
             double exchangeRate = exchangeRateResponse.getExchangeRate(target);
             redisService.setValues(cacheKey,exchangeRate,Duration.ofSeconds(CACHE_EXPIRATION_SECONDS));
             return exchangeRate;

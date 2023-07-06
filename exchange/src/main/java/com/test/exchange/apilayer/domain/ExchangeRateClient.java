@@ -4,8 +4,10 @@ import com.test.exchange.apilayer.dto.ApiErrorResponse;
 import com.test.exchange.apilayer.dto.ExchangeRateResponse;
 import com.test.exchange.exchange.domain.Currency;
 import com.test.exchange.global.exception.ApiServerDownException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -15,23 +17,16 @@ import static com.test.exchange.global.exception.ErrorMessage.*;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
+@Component
 public class ExchangeRateClient {
-    private String requestUrl;
 
-    private ExchangeRateClient(String baseUrl, String accessKey) {
-        requestUrl = baseUrl + "?access_key=" + accessKey;
-    }
-
-    public static ExchangeRateClient of(String baseUrl, String accessKey){
-        return new ExchangeRateClient(baseUrl,accessKey);
-    }
-
-    public ExchangeRateResponse getExchangeRate(Currency source, Currency target,
+    public ExchangeRateResponse getExchangeRate(String baseUrl, String accessKey,
+                                                Currency source, Currency target,
                                                 List<Currency> allowedSources, List<Currency> allowedTargets) {
         assertParams(source, target, allowedSources, allowedTargets);
         return WebClient.create()
                 .get()
-                .uri(makeUrl(source, target))
+                .uri(makeUrl(baseUrl, accessKey, source, target))
                 .retrieve()
                 .onStatus(HttpStatus::isError, res -> res.bodyToMono(String.class)
                         .flatMap(error -> Mono.error(new ApiServerDownException(ApiErrorResponse.of(INTERNAL_SERVER_ERROR.value(), error)))))
@@ -39,8 +34,14 @@ public class ExchangeRateClient {
                 .block();
     }
 
-    private String makeUrl(Currency source, Currency target){
-        return requestUrl
+    private String makeCacheKey(Currency source, Currency target){
+        return source+""+target;
+    }
+
+
+    private String makeUrl(String baseUrl, String accessKey, Currency source, Currency target){
+        return baseUrl
+                + "?access_key=" + accessKey
                 + "&source=" + source
                 + "&currencies=" + target;
     }

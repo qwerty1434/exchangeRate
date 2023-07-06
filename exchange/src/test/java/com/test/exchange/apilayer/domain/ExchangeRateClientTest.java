@@ -4,6 +4,7 @@ import com.test.exchange.apilayer.dto.ExchangeRateResponse;
 import com.test.exchange.exchange.domain.Currency;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -18,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class ExchangeRateClientTest {
+    @Autowired
+    ExchangeRateClient exchangeRateClient;
     @Value("${api-layer.base-url}")
     private String baseUrl;
     @Value("${api-layer.access-key}")
@@ -31,10 +34,9 @@ class ExchangeRateClientTest {
     @Test
     void testExchangeRateClientWithInvalidUrlAddress(){
         String invalidBaseUrl = "invalidUrl";
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(invalidBaseUrl,accessKey);
 
         assertThatThrownBy(() -> exchangeRateClient
-                .getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets))
+                .getExchangeRate(invalidBaseUrl,accessKey,VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets))
                 .isInstanceOf(WebClientRequestException.class);
     }
 
@@ -42,10 +44,9 @@ class ExchangeRateClientTest {
     @Test
     void testExchangeRateClientWithInvalidAccessKey(){
         String invalidAccessKey = "invalidKey";
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,invalidAccessKey);
 
         ExchangeRateResponse exchangeRateResponse = exchangeRateClient
-                .getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
+                .getExchangeRate(baseUrl,invalidAccessKey,VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
 
         assertThat(exchangeRateResponse.isSuccess()).isFalse();
         assertThat(exchangeRateResponse.getError().getType()).isEqualTo("invalid_access_key");
@@ -56,10 +57,9 @@ class ExchangeRateClientTest {
     void testExchangeRateClientWithSameSourceAndTarget(){
         Currency source = USD;
         Currency target = USD;
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,accessKey);
 
         assertThatThrownBy(() -> exchangeRateClient
-                .getExchangeRate(source,target,allowedSources,allowedTargets))
+                .getExchangeRate(baseUrl,accessKey,source,target,allowedSources,allowedTargets))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(SAME_CURRENCY_ERROR.getMessage());
     }
@@ -70,10 +70,9 @@ class ExchangeRateClientTest {
         List<Currency> customAllowedSources = new ArrayList<>();
         customAllowedSources.add(USD);
         Currency excludedSource = JPY;
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,accessKey);
 
         assertThatThrownBy(() -> exchangeRateClient
-                .getExchangeRate(excludedSource,VALID_TARGET,customAllowedSources,allowedTargets))
+                .getExchangeRate(baseUrl,accessKey,excludedSource,VALID_TARGET,customAllowedSources,allowedTargets))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(INVALID_SOURCE_VALUE_ERROR.getMessage());
     }
@@ -85,10 +84,9 @@ class ExchangeRateClientTest {
         customAllowedTargets.add(JPY);
         customAllowedTargets.add(PHP);
         Currency excludedTarget = KRW;
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,accessKey);
 
         assertThatThrownBy(() -> exchangeRateClient
-                .getExchangeRate(VALID_SOURCE,excludedTarget,allowedSources,customAllowedTargets))
+                .getExchangeRate(baseUrl,accessKey,VALID_SOURCE,excludedTarget,allowedSources,customAllowedTargets))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(INVALID_TARGET_VALUE_ERROR.getMessage());
     }
@@ -96,10 +94,9 @@ class ExchangeRateClientTest {
     @DisplayName("유효한 값들로 환율을 조회하면 요청이 성공합니다.")
     @Test
     void testExchangeRateClientWithValidVariables(){
-        ExchangeRateClient exchangeRateClient = ExchangeRateClient.of(baseUrl,accessKey);
 
         ExchangeRateResponse exchangeRateResponse = exchangeRateClient
-                .getExchangeRate(VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
+                .getExchangeRate(baseUrl,accessKey,VALID_SOURCE,VALID_TARGET,allowedSources,allowedTargets);
 
         assertThat(exchangeRateResponse.isSuccess()).isTrue();
         assertThat(exchangeRateResponse.getExchangeRate(VALID_TARGET)).isGreaterThan(0);
