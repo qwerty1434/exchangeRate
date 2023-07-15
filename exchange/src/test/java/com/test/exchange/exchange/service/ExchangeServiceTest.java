@@ -3,17 +3,17 @@ package com.test.exchange.exchange.service;
 import com.test.exchange.apilayer.domain.ExchangeRateClient;
 import com.test.exchange.apilayer.dto.ExchangeRateResponse;
 import com.test.exchange.exchange.domain.Currency;
-import com.test.exchange.exchange.domain.Exchange;
-import com.test.exchange.exchange.domain.Remittance;
 import com.test.exchange.exchange.dto.ExchangeMoneyResponse;
 import com.test.exchange.exchange.repository.ExchangeRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Map;
 
@@ -22,17 +22,21 @@ import static com.test.exchange.exchange.domain.Currency.USD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class ExchangeServiceTest {
     private static final Currency VALID_SOURCE = USD;
     private static final Currency VALID_TARGET = KRW;
-    @Mock
+    @MockBean
     ExchangeRateClient exchangeRateClient;
-    @Mock
+    @Autowired
     ExchangeRepository exchangeRepository;
-    @InjectMocks
     ExchangeService exchangeService;
 
+    @BeforeEach
+    public void beforeEach(){
+        exchangeService = new ExchangeService(exchangeRepository,exchangeRateClient);
+    }
 
     @DisplayName("수취국가와 송금국가를 입력해 원하는 환율을 조회합니다.")
     @Test
@@ -94,8 +98,6 @@ class ExchangeServiceTest {
 
         BDDMockito.given(exchangeRateClient.getExchangeRate(any(),any(),any(),any(),any(),any()))
                 .willReturn(response);
-        BDDMockito.given(exchangeRepository.save(any()))
-                .willReturn(Exchange.of(VALID_SOURCE,VALID_TARGET, Remittance.from(givenRemittance),exchangeRate));
 
         ExchangeMoneyResponse exchangeMoneyResponse =
                 exchangeService.exchangeMoney(VALID_SOURCE, VALID_TARGET, givenRemittance);
