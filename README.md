@@ -143,4 +143,3 @@ GET /exchange/{source}/{target}?remittance={remittance}
 | 서버 내부에 문제가 발생한 경우                    | 500       | 서버 내부에 문제가 발생했습니다. 담당자에게 문의 부탁드립니다. |
 
 <hr>
->>>>>>> 48632abc150efcfc5278f796065792f471259680
