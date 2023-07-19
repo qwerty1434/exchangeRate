@@ -2,8 +2,13 @@ package com.test.exchange.apilayer.domain;
 
 import com.test.exchange.apilayer.dto.ExchangeRateResponse;
 import com.test.exchange.exchange.domain.Currency;
+import com.test.exchange.redis.RedisService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,8 +23,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ExchangeRateClientTest {
-    @Autowired
+    @Mock
+    RedisService redisService;
+    @InjectMocks
     ExchangeRateClient exchangeRateClient;
     @Value("${api-layer.base-url}")
     private String baseUrl;
