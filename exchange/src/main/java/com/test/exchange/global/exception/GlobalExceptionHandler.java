@@ -50,4 +50,10 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(HttpStatus.BAD_REQUEST,e.getMessage()));
     }
 
+    @ExceptionHandler(RedisLockAcquisitionFailedException.class)
+    protected ResponseEntity RedisLockAcquisitionFailedException(RedisLockAcquisitionFailedException e){
+        log.error("레디스 락 획득에 실패했습니다.", e);
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(INTERNAL_SERVER_ERROR));
+    }
 }
