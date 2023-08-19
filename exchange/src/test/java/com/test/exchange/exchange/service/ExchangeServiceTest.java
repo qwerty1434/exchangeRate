@@ -31,11 +31,13 @@ class ExchangeServiceTest {
     ExchangeRateClient exchangeRateClient;
     @Autowired
     ExchangeRepository exchangeRepository;
+    @Autowired
+    ExchangeRepoClient exchangeRepoClient;
     ExchangeService exchangeService;
 
     @BeforeEach
     public void beforeEach(){
-        exchangeService = new ExchangeService(exchangeRepository,exchangeRateClient);
+        exchangeService = new ExchangeService(exchangeRateClient, exchangeRepoClient);
     }
 
     @DisplayName("수취국가와 송금국가를 입력해 원하는 환율을 조회합니다.")
