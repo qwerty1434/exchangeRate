@@ -35,12 +35,6 @@
   - ExchangeRateClient에 API요청 정보와 요청 결과를 담는 Map변수를 선언했습니다.
   - 요청하려는 값에 대한 정보가 cache에 존재하고, CACHE_EXPIRATION_SECONDS을 초과하지 않았다면 API서버에 요청하지 않고 캐싱된 값을 활용합니다. 현재 CACHE_EXPIRATION_SECONDS는 60초로 설정되어 있습니다.
 
-### 3. 예외 처리에 대한 기준을 수립하고 해당 기준에 맞춰 예외를 관리했습니다.
-
-1. IllegalArgumentException처럼 이미 정의된 예외를 최대한 활용했습니다.
-2. API서버에서 반환하는 예외를 최대한 활용했습니다. API서버에서 반환하는 예외는 Custom Exception으로의 변환을 거쳐 사용자에게 보여집니다.
-3. 1과 2로 해결하지 못한 예외는 Runtime Exception을 상속 받은 Custom Exception을 정의해 예외를 처리했습니다.
-
 <hr>
 
 # API 명세
